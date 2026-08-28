@@ -1,5 +1,5 @@
-import NexoApp from "./components/NexoApp";
+import JoviLibrary from "./components/JoviLibrary";
 
 export default function Home() {
-  return <NexoApp />;
+  return <JoviLibrary />;
 }

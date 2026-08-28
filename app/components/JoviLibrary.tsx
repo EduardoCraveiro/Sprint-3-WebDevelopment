@@ -25,17 +25,17 @@ import { ContentCard } from "./ContentCard";
 import { Header } from "./Header";
 import { Sidebar, type ViewName } from "./Sidebar";
 
-const ITEM_KEY = "nexo-items-v1";
-const HISTORY_KEY = "nexo-history-v1";
+const ITEM_KEY = "humanly-jovi-items-v1";
+const HISTORY_KEY = "humanly-jovi-history-v1";
 
 const emptyForm = {
   title: "",
   description: "",
-  category: "Design",
-  type: "Artigo" as ContentType,
-  collection: "Referencias",
+  category: "Campus",
+  type: "Foto" as ContentType,
+  collection: "Vida no campus",
   privacy: "Privado" as Privacy,
-  image: "https://images.unsplash.com/photo-1456324504439-367cee3b3c32?auto=format&fit=crop&w=900&q=80",
+  image: "/jovi/mode-campus.webp",
 };
 
 type FormState = typeof emptyForm;
@@ -53,7 +53,7 @@ function StatCard({ label, value, note, icon: Icon, tone }: { label: string; val
   );
 }
 
-export default function NexoApp() {
+export default function JoviLibrary() {
   const [items, setItems] = useState<ContentItem[]>(INITIAL_ITEMS);
   const [history, setHistory] = useState<HistoryEntry[]>(INITIAL_HISTORY);
   const [activeView, setActiveView] = useState<ViewName>("dashboard");
@@ -163,7 +163,7 @@ export default function NexoApp() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "nexo-conteudos.json";
+    link.download = "jovi-memorias.json";
     link.click();
     URL.revokeObjectURL(url);
     logAction("Exportado", `${activeItems.length} itens`);
@@ -211,7 +211,7 @@ export default function NexoApp() {
         />
         <main className="workspace">
           <div className="page-heading">
-            <div><span className="eyebrow">Seu espaco pessoal</span><h1>{viewTitle[activeView]}</h1><p>Organize ideias, referencias e aprendizados em um so lugar.</p></div>
+            <div><span className="eyebrow">Humanly × JOVI</span><h1>{viewTitle[activeView]}</h1><p>Organize os momentos capturados ao longo da sua rotina.</p></div>
             <button className="secondary-button" onClick={exportData}><Download size={17} />Exportar dados</button>
           </div>
 
@@ -266,7 +266,7 @@ export default function NexoApp() {
                 <div><h2>{activeView === "dashboard" ? "Adicionados recentemente" : viewTitle[activeView]}</h2><span>{visibleItems.length} itens encontrados</span></div>
                 <div className="filter-row">
                   <select aria-label="Filtrar por categoria" value={category} onChange={(event) => setCategory(event.target.value)}><option>Todas</option>{categories.map((item) => <option key={item}>{item}</option>)}</select>
-                  <select aria-label="Ordenar conteudo" value={sort} onChange={(event) => setSort(event.target.value)}><option value="recentes">Mais recentes</option><option value="antigos">Mais antigos</option><option value="az">A - Z</option></select>
+                  <select aria-label="Ordenar memorias" value={sort} onChange={(event) => setSort(event.target.value)}><option value="recentes">Mais recentes</option><option value="antigos">Mais antigos</option><option value="az">A - Z</option></select>
                 </div>
               </div>
               {visibleItems.length ? (
@@ -282,7 +282,7 @@ export default function NexoApp() {
             </section>
           )}
         </main>
-        <footer className="app-footer"><strong>NEXO</strong><span>Central de conteudo pessoal</span><small>© 2026 Humanly | Projeto academico FIAP</small></footer>
+        <footer className="app-footer"><strong>HUMANLY × JOVI</strong><span>Biblioteca de momentos</span><small>© 2026 Humanly | Projeto academico FIAP</small></footer>
       </div>
 
       {selected.length > 0 && (
@@ -296,10 +296,10 @@ export default function NexoApp() {
             <div className="modal-header"><div><span className="eyebrow">Biblioteca</span><h2 id="form-title">{editingId ? "Editar item" : "Adicionar novo item"}</h2></div><button className="icon-button" onClick={() => setModal(null)} aria-label="Fechar"><X size={19} /></button></div>
             <form onSubmit={saveItem}>
               <label className="full-field"><span>Titulo</span><input required value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} placeholder="Ex.: Tendencias de design para 2027" /></label>
-              <label className="full-field"><span>Descricao</span><textarea required value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} placeholder="Uma descricao curta do conteudo" /></label>
+              <label className="full-field"><span>Descricao</span><textarea required value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} placeholder="Uma descricao curta da memoria" /></label>
               <div className="form-grid">
                 <label><span>Categoria</span><input required value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} /></label>
-                <label><span>Tipo</span><select value={form.type} onChange={(event) => setForm({ ...form, type: event.target.value as ContentType })}><option>Artigo</option><option>Video</option><option>Podcast</option><option>Documento</option></select></label>
+                <label><span>Tipo</span><select value={form.type} onChange={(event) => setForm({ ...form, type: event.target.value as ContentType })}><option>Foto</option><option>Video</option><option>Documento</option></select></label>
                 <label><span>Colecao</span><input required value={form.collection} onChange={(event) => setForm({ ...form, collection: event.target.value })} /></label>
                 <label><span>Privacidade</span><select value={form.privacy} onChange={(event) => setForm({ ...form, privacy: event.target.value as Privacy })}><option>Privado</option><option>Publico</option></select></label>
               </div>
@@ -324,5 +324,5 @@ export default function NexoApp() {
 }
 
 function EmptyState({ label }: { label: string }) {
-  return <div className="empty-state"><SearchX size={28} /><strong>{label}</strong><span>Tente ajustar os filtros ou adicionar um novo conteudo.</span></div>;
+  return <div className="empty-state"><SearchX size={28} /><strong>{label}</strong><span>Tente ajustar os filtros ou adicionar uma nova memoria.</span></div>;
 }

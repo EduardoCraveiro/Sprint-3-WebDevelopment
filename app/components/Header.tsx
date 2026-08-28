@@ -28,7 +28,7 @@ export function Header({
       </button>
       <label className="search-box">
         <Search size={18} aria-hidden="true" />
-        <input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Buscar na sua central..." />
+        <input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Buscar nas suas memorias..." />
         <span className="shortcut">/</span>
       </label>
       <div className="topbar-actions">
@@ -40,15 +40,14 @@ export function Header({
           {notificationsOpen && (
             <div className="notifications-panel">
               <strong>Notificacoes</strong>
-              <p><span className="notice-mark coral" />O documento “Guia de acessibilidade” foi atualizado.</p>
-              <p><span className="notice-mark green" />Seu resumo semanal esta pronto.</p>
+              <p><span className="notice-mark coral" />Sua memoria mais recente esta pronta para organizar.</p>
+              <p><span className="notice-mark green" />Seu resumo de momentos esta pronto.</p>
             </div>
           )}
         </div>
-        <button className="primary-button" onClick={onAdd}><Plus size={18} />Adicionar item</button>
+        <button className="primary-button" onClick={onAdd}><Plus size={18} />Adicionar memoria</button>
         <div className="avatar" aria-label="Perfil de Eduardo">ED</div>
       </div>
     </header>
   );
 }
-

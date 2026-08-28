@@ -1,4 +1,4 @@
-export type ContentType = "Artigo" | "Video" | "Podcast" | "Documento";
+export type ContentType = "Foto" | "Video" | "Documento";
 export type Privacy = "Publico" | "Privado";
 
 export type ContentItem = {
@@ -22,4 +22,3 @@ export type HistoryEntry = {
   item: string;
   date: string;
 };
-

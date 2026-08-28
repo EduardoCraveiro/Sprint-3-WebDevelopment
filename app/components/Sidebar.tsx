@@ -1,6 +1,6 @@
 "use client";
 
-import { ArchiveRestore, BarChart3, BookOpen, Clock3, Folder, Grid2X2, Heart, Settings, Trash2, X } from "lucide-react";
+import { BarChart3, BookOpen, Camera, Clock3, Folder, Grid2X2, Heart, Settings, Trash2, X } from "lucide-react";
 
 export type ViewName = "dashboard" | "library" | "collections" | "favorites" | "history" | "trash";
 
@@ -26,8 +26,8 @@ export function Sidebar({ activeView, onViewChange, mobileOpen, onClose, counts 
     <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
       <div className="brand-row">
         <button className="brand" onClick={() => onViewChange("dashboard")} aria-label="Ir para visao geral">
-          <span className="brand-mark"><ArchiveRestore size={20} /></span>
-          <span>NEXO<small>central de conteudo</small></span>
+          <span className="brand-mark"><Camera size={20} /></span>
+          <span>JOVI<small>memorias por Humanly</small></span>
         </button>
         <button className="icon-button sidebar-close" onClick={onClose} aria-label="Fechar menu"><X size={20} /></button>
       </div>
@@ -51,4 +51,3 @@ export function Sidebar({ activeView, onViewChange, mobileOpen, onClose, counts 
     </aside>
   );
 }
-

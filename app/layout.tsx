@@ -9,15 +9,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = `${protocol}://${host}`;
 
   return {
-    title: "NEXO | Central de conteudo",
-    description: "Organize, compare e acompanhe seus conteudos em um so lugar.",
-    icons: { icon: `${baseUrl}/og.png` },
+    title: "JOVI Memorias | Humanly",
+    description: "Organize os momentos registrados pela experiencia JOVI.",
+    icons: { icon: `${baseUrl}/jovi/mode-campus.webp` },
     openGraph: {
-      title: "NEXO | Central de conteudo",
-      description: "Organize, compare e acompanhe seus conteudos em um so lugar.",
-      images: [{ url: `${baseUrl}/og.png`, width: 1536, height: 909, alt: "NEXO - Central de conteudo" }],
+      title: "JOVI Memorias | Humanly",
+      description: "Organize os momentos registrados pela experiencia JOVI.",
+      images: [{ url: `${baseUrl}/jovi/mode-campus.webp`, alt: "JOVI Memorias" }],
     },
-    twitter: { card: "summary_large_image", images: [`${baseUrl}/og.png`] },
+    twitter: { card: "summary_large_image", images: [`${baseUrl}/jovi/mode-campus.webp`] },
   };
 }
 

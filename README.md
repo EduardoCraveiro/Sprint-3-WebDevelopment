@@ -1,10 +1,10 @@
-# NEXO - Central de Conteudo
+# Humanly × JOVI - Biblioteca de Momentos
 
-Projeto desenvolvido pela equipe Humanly para a Sprint 3 de Web Development. O NEXO e uma central pessoal para reunir, organizar, pesquisar e acompanhar artigos, videos, podcasts e documentos.
+Projeto independente desenvolvido pela equipe Humanly para a Sprint 3 de Web Development. Inspirada no contexto da empresa JOVI, a aplicacao permite reunir, organizar, pesquisar e acompanhar fotos, videos e documentos da rotina do usuario.
 
 ## Funcionalidades
 
-- Cadastro, edicao e exclusao de conteudos;
+- Cadastro, edicao e exclusao de memorias;
 - Busca, filtros por categoria e ordenacao;
 - Colecoes e reorganizacao manual de itens;
 - Favoritos e controle de conteudo publico ou privado;
@@ -31,7 +31,6 @@ Projeto desenvolvido pela equipe Humanly para a Sprint 3 de Web Development. O N
 
 - Node.js 22.13 ou superior;
 - npm 10 ou superior;
-- Conexao com a internet para carregar as imagens de demonstracao.
 
 ## Como instalar as dependencias
 
@@ -62,7 +61,7 @@ npm test
 
 ## Armazenamento local
 
-Os conteudos e o historico ficam salvos no `localStorage` do navegador nas chaves `nexo-items-v1` e `nexo-history-v1`. Assim, as alteracoes permanecem disponiveis depois de recarregar ou fechar a pagina no mesmo dispositivo.
+As memorias e o historico ficam salvos no `localStorage` do navegador nas chaves `humanly-jovi-items-v1` e `humanly-jovi-history-v1`. Assim, as alteracoes permanecem disponiveis depois de recarregar ou fechar a pagina no mesmo dispositivo.
 
 ## Uso de Math
 
