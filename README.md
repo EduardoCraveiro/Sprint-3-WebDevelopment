@@ -70,7 +70,7 @@ O projeto usa `Math.max` para gerar identificadores, `Math.min` para limitar val
 
 ## Uso de inteligencia artificial
 
-A inteligencia artificial foi utilizada como apoio na migracao e estruturacao do prototipo em componentes React, na implementacao das funcionalidades solicitadas, na organizacao visual responsiva e na revisao tecnica. Todo o codigo foi integrado e validado no contexto deste projeto, mantendo os requisitos da atividade como referencia principal.
+Ferramentas de inteligencia artificial foram utilizadas como apoio tecnico na migração e estruturação do prototipo em componentes React, na implementação das funcionalidades solicitadas, na organização visual responsiva e na revisão do projeto. A equipe revisou, testou e validou o resultado final, sendo responsavel por compreender o codigo, as funcionalidades implementadas e as decisões apresentadas.
 
 ## Links do projeto
 
