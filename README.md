@@ -1,6 +1,6 @@
 # NEXO - Central de Conteudo
 
-Projeto desenvolvido para a Sprint 3 de Web Development. O NEXO e uma central pessoal para reunir, organizar, pesquisar e acompanhar artigos, videos, podcasts e documentos.
+Projeto desenvolvido pela equipe Humanly para a Sprint 3 de Web Development. O NEXO e uma central pessoal para reunir, organizar, pesquisar e acompanhar artigos, videos, podcasts e documentos.
 
 ## Funcionalidades
 
@@ -21,7 +21,7 @@ Projeto desenvolvido para a Sprint 3 de Web Development. O NEXO e uma central pe
 
 - React 19;
 - TypeScript;
-- Vinext/Vite;
+- Next.js 16;
 - CSS responsivo;
 - Lucide React para icones;
 - Web Storage API (`localStorage`);
@@ -74,10 +74,9 @@ A inteligencia artificial foi utilizada como apoio na migracao e estruturacao do
 
 ## Links do projeto
 
-- Repositorio GitHub: sera informado apos a publicacao.
-- Deploy: sera informado apos a publicacao.
+- Repositorio GitHub: https://github.com/EduardoCraveiro/Sprint-3-WebDevelopment
+- Deploy na Vercel: sera informado apos a publicacao.
 
 ## Integrantes
 
-Consulte o arquivo `INTEGRANTES.TXT` presente na raiz do projeto.
-
+Equipe Humanly. Consulte o arquivo `INTEGRANTES.TXT` presente na raiz do projeto para os nomes completos e RMs.

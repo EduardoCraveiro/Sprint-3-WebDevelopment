@@ -282,7 +282,7 @@ export default function NexoApp() {
             </section>
           )}
         </main>
-        <footer className="app-footer"><strong>NEXO</strong><span>Central de conteudo pessoal</span><small>© 2026 Projeto academico FIAP</small></footer>
+        <footer className="app-footer"><strong>NEXO</strong><span>Central de conteudo pessoal</span><small>© 2026 Humanly | Projeto academico FIAP</small></footer>
       </div>
 
       {selected.length > 0 && (
