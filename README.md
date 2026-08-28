@@ -75,7 +75,7 @@ A inteligencia artificial foi utilizada como apoio na migracao e estruturacao do
 ## Links do projeto
 
 - Repositorio GitHub: https://github.com/EduardoCraveiro/Sprint-3-WebDevelopment
-- Deploy na Vercel: sera informado apos a publicacao.
+- Deploy na Vercel: https://sprint-3-web-development-three.vercel.app
 
 ## Integrantes
 
