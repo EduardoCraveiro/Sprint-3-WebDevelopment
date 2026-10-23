@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --ink: #202424;
   --muted: #737977;
@@ -21,7 +23,7 @@ button, input, select, textarea { font: inherit; }
 button { color: inherit; }
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid rgba(35, 76, 255, .22); outline-offset: 2px; }
 
-.app-shell { min-height: 100vh; }
+.app-shell { @apply min-h-screen; }
 .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 40; width: 238px; display: flex; flex-direction: column; background: #050814; color: #f7f8ff; border-right: 1px solid #1a2341; }
 .brand-row { height: 76px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #1a2341; }
 .brand { border: 0; background: none; color: inherit; display: flex; align-items: center; gap: 11px; padding: 0; cursor: pointer; text-align: left; }
@@ -199,15 +201,30 @@ select, input, textarea { border: 1px solid #dfe2df; border-radius: 5px; backgro
 .app-footer strong { color: var(--ink); font-size: 12px; }
 .app-footer small { margin-left: auto; }
 .sidebar-overlay { display: none; }
+.sidebar-nav a { @apply flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-left text-[#aeb4b1] no-underline; }
+.sidebar-nav a:hover, .sidebar-nav a.active { background: #111936; color: white; }
+.sidebar-nav a.active { box-shadow: inset 3px 0 #91e9ff; }
+.sidebar-nav a span { flex: 1; font-size: 13px; }
+.settings-button { text-decoration: none; font-size: 13px; }
+.mobile-add { display: none; }
+
+@media (max-width: 760px) {
+  .mobile-add { display: inline-flex; margin-bottom: 20px; }
+}
 
 @media (max-width: 1120px) {
+  .topbar { gap: 10px; padding-inline: 20px; }
+  .search-box { flex: 1; min-width: 0; width: auto; }
+  .topbar-actions { gap: 6px; }
+  .topbar .avatar, .shortcut { display: none; }
+  .topbar .primary-button { padding-inline: 10px; font-size: 11px; }
   .content-grid, .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .collections-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 760px) {
-  .sidebar { transform: translateX(-100%); transition: transform .22s ease; }
-  .sidebar.open { transform: translateX(0); }
+  .sidebar { transform: translateX(-100%); visibility: hidden; transition: transform .22s ease; }
+  .sidebar.open { transform: translateX(0); visibility: visible; }
   .sidebar-close { display: grid !important; color: #fff; }
   .sidebar-overlay { position: fixed; inset: 0; z-index: 35; display: block; border: 0; background: rgba(20,24,22,.52); }
   .app-main { margin-left: 0; }

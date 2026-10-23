@@ -1,8 +1,9 @@
 "use client";
 
-import { BarChart3, BookOpen, Camera, Clock3, Folder, Grid2X2, Heart, Settings, Trash2, X } from "lucide-react";
+import Link from "next/link";
+import { BarChart3, BookOpen, Camera, Clock3, Folder, Grid2X2, Heart, Trash2, X } from "lucide-react";
+import { VIEW_PATHS, type ViewName } from "../lib/navigation";
 
-export type ViewName = "dashboard" | "library" | "collections" | "favorites" | "history" | "trash";
 
 type SidebarProps = {
   activeView: ViewName;
@@ -34,19 +35,18 @@ export function Sidebar({ activeView, onViewChange, mobileOpen, onClose, counts 
       <nav className="sidebar-nav" aria-label="Navegacao principal">
         <span className="nav-label">Espaco pessoal</span>
         {links.map(({ id, label, icon: Icon, count }) => (
-          <button key={id} className={activeView === id ? "active" : ""} onClick={() => { onViewChange(id); onClose(); }}>
+          <Link href={VIEW_PATHS[id]} key={id} aria-current={activeView === id ? "page" : undefined} className={activeView === id ? "active" : ""} onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onViewChange(id); onClose(); }}>
             <Icon size={18} />
             <span>{label}</span>
             {count && <em>{counts[count]}</em>}
-          </button>
+          </Link>
         ))}
       </nav>
       <div className="storage-panel">
-        <div className="storage-title"><span>Armazenamento</span><strong>38%</strong></div>
-        <div className="storage-track"><span /></div>
-        <small>3,8 GB de 10 GB utilizados</small>
+        <div className="storage-title"><span>Biblioteca local</span><strong>{counts.library} itens</strong></div>
+        <small>Organização salva neste navegador. Exporte uma cópia dos seus dados.</small>
       </div>
-      <button className="settings-button"><Settings size={18} />Configuracoes</button>
+      <Link className="settings-button" href="/">Conhecer o projeto</Link>
       <div className="sidebar-footer"><BarChart3 size={17} /><span>Dados salvos neste dispositivo</span></div>
     </aside>
   );

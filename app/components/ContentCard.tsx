@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- URLs das capas sao cadastradas pelo usuario. */
 
-import { Check, Eye, EyeOff, Heart, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Check, Eye, EyeOff, Heart, Pencil, Trash2 } from "lucide-react";
 import type { ContentItem } from "../types";
 
 type ContentCardProps = {
@@ -36,7 +36,6 @@ export function ContentCard({ item, selected, onSelect, onFavorite, onPrivacy, o
           <div className="card-actions">
             <button className="icon-button" onClick={onEdit} aria-label="Editar item" title="Editar"><Pencil size={16} /></button>
             <button className="icon-button danger" onClick={onDelete} aria-label="Mover para lixeira" title="Mover para lixeira"><Trash2 size={16} /></button>
-            <button className="icon-button muted" aria-label="Mais opcoes" title="Mais opcoes"><MoreHorizontal size={17} /></button>
           </div>
         </div>
       </div>
