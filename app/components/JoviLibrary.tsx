@@ -2,8 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- URLs das capas sao cadastradas pelo usuario. */
 
-import { useJoviLibrary } from "../hooks/useJoviLibrary";
-import { isImageUrl } from "../lib/images";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -20,11 +19,30 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import type { ContentType, Privacy } from "../types";
+import { INITIAL_HISTORY, INITIAL_ITEMS } from "../data";
+import type { ContentItem, ContentType, HistoryEntry, Privacy } from "../types";
 import { ContentCard } from "./ContentCard";
 import { Header } from "./Header";
-import { Modal } from "./Modal";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, type ViewName } from "./Sidebar";
+
+const ITEM_KEY = "humanly-jovi-items-v1";
+const HISTORY_KEY = "humanly-jovi-history-v1";
+
+const emptyForm = {
+  title: "",
+  description: "",
+  category: "Campus",
+  type: "Foto" as ContentType,
+  collection: "Vida no campus",
+  privacy: "Privado" as Privacy,
+  image: "/jovi/mode-campus.webp",
+};
+
+type FormState = typeof emptyForm;
+
+function formatToday() {
+  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date());
+}
 
 function StatCard({ label, value, note, icon: Icon, tone }: { label: string; value: number; note: string; icon: typeof Folder; tone: string }) {
   return (
@@ -36,9 +54,146 @@ function StatCard({ label, value, note, icon: Icon, tone }: { label: string; val
 }
 
 export default function JoviLibrary() {
-  const { activeView, setActiveView, query, setQuery, category, setCategory, sort, setSort, selected, setSelected, modal, setModal, editingId, form, setForm, mobileOpen, setMobileOpen, notificationsOpen, setNotificationsOpen, items, setItems, history, activeItems, categories, collections, visibleItems, logAction, patchItem, openAdd, openEdit, saveItem, toggleSelect, moveItem, exportData, randomizeRecommendation, recommendation, usagePercent, favoritePercent, recentCount, counts, viewTitle, ready, error, storageWarning, retry } = useJoviLibrary();
+  const [items, setItems] = useState<ContentItem[]>(INITIAL_ITEMS);
+  const [history, setHistory] = useState<HistoryEntry[]>(INITIAL_HISTORY);
+  const [activeView, setActiveView] = useState<ViewName>("dashboard");
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("Todas");
+  const [sort, setSort] = useState("recentes");
+  const [selected, setSelected] = useState<number[]>([]);
+  const [modal, setModal] = useState<"form" | "compare" | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState<FormState>(emptyForm);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [recommendationId, setRecommendationId] = useState(INITIAL_ITEMS[1].id);
+  const [ready, setReady] = useState(false);
 
-  if (!ready) return <main className="grid min-h-screen place-items-center p-6 text-center"><div>{error ? <><p role="alert">{error}</p><button className="primary-button mt-5" onClick={retry}>Tentar novamente</button></> : <p role="status">Carregando suas memórias…</p>}</div></main>;
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const storedItems = localStorage.getItem(ITEM_KEY);
+      const storedHistory = localStorage.getItem(HISTORY_KEY);
+      if (storedItems) setItems(JSON.parse(storedItems));
+      if (storedHistory) setHistory(JSON.parse(storedHistory));
+      setReady(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    localStorage.setItem(ITEM_KEY, JSON.stringify(items));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }, [items, history, ready]);
+
+  const activeItems = useMemo(() => items.filter((item) => !item.deleted), [items]);
+  const deletedItems = useMemo(() => items.filter((item) => item.deleted), [items]);
+  const categories = useMemo(() => [...new Set(activeItems.map((item) => item.category))], [activeItems]);
+  const collections = useMemo(() => [...new Set(activeItems.map((item) => item.collection))], [activeItems]);
+
+  const visibleItems = useMemo(() => {
+    let result = activeView === "trash" ? deletedItems : activeItems;
+    if (activeView === "favorites") result = result.filter((item) => item.favorite);
+    if (category !== "Todas") result = result.filter((item) => item.category === category);
+    const normalized = query.toLowerCase().trim();
+    if (normalized) result = result.filter((item) => `${item.title} ${item.description} ${item.category}`.toLowerCase().includes(normalized));
+    return [...result].sort((a, b) => {
+      if (sort === "az") return a.title.localeCompare(b.title);
+      if (sort === "antigos") return a.updatedAt.localeCompare(b.updatedAt);
+      return b.updatedAt.localeCompare(a.updatedAt);
+    });
+  }, [activeItems, activeView, category, deletedItems, query, sort]);
+
+  const logAction = (action: string, item: string) => {
+    setHistory((current) => [{ id: Date.now(), action, item, date: formatToday() }, ...current].slice(0, 30));
+  };
+
+  const patchItem = (id: number, patch: Partial<ContentItem>, action: string) => {
+    const target = items.find((item) => item.id === id);
+    setItems((current) => current.map((item) => item.id === id ? { ...item, ...patch, updatedAt: new Date().toISOString().slice(0, 10) } : item));
+    if (target) logAction(action, target.title);
+  };
+
+  const openAdd = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setModal("form");
+  };
+
+  const openEdit = (item: ContentItem) => {
+    setEditingId(item.id);
+    setForm({ title: item.title, description: item.description, category: item.category, type: item.type, collection: item.collection, privacy: item.privacy, image: item.image });
+    setModal("form");
+  };
+
+  const saveItem = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (editingId) {
+      const target = items.find((item) => item.id === editingId);
+      setItems((current) => current.map((item) => item.id === editingId ? { ...item, ...form, updatedAt: new Date().toISOString().slice(0, 10) } : item));
+      if (target) logAction("Editado", target.title);
+    } else {
+      const nextId = Math.max(0, ...items.map((item) => item.id)) + 1;
+      const now = new Date().toISOString().slice(0, 10);
+      setItems((current) => [{ ...form, id: nextId, favorite: false, deleted: false, createdAt: now, updatedAt: now }, ...current]);
+      logAction("Adicionado", form.title);
+    }
+    setModal(null);
+  };
+
+  const toggleSelect = (id: number) => {
+    setSelected((current) => current.includes(id) ? current.filter((itemId) => itemId !== id) : current.length < 2 ? [...current, id] : [current[1], id]);
+  };
+
+  const moveItem = (id: number, direction: -1 | 1) => {
+    setItems((current) => {
+      const from = current.findIndex((item) => item.id === id);
+      const to = Math.max(0, Math.min(current.length - 1, from + direction));
+      if (from === to) return current;
+      const next = [...current];
+      [next[from], next[to]] = [next[to], next[from]];
+      return next;
+    });
+    const target = items.find((item) => item.id === id);
+    if (target) logAction("Reorganizado", target.title);
+  };
+
+  const exportData = () => {
+    const blob = new Blob([JSON.stringify({ items: activeItems, history }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "jovi-memorias.json";
+    link.click();
+    URL.revokeObjectURL(url);
+    logAction("Exportado", `${activeItems.length} itens`);
+  };
+
+  const randomizeRecommendation = () => {
+    if (!activeItems.length) return;
+    const randomIndex = Math.floor(Math.random() * activeItems.length);
+    setRecommendationId(activeItems[randomIndex].id);
+  };
+
+  const recommendation = activeItems.find((item) => item.id === recommendationId) ?? activeItems[0];
+  const usagePercent = Math.min(100, Math.round((activeItems.length / 20) * 100));
+  const favoritePercent = activeItems.length ? Math.round((activeItems.filter((item) => item.favorite).length / activeItems.length) * 100) : 0;
+
+  const counts = {
+    library: activeItems.length,
+    collections: collections.length,
+    favorites: activeItems.filter((item) => item.favorite).length,
+    trash: deletedItems.length,
+  };
+
+  const viewTitle: Record<ViewName, string> = {
+    dashboard: "Visao geral",
+    library: "Minha biblioteca",
+    collections: "Colecoes",
+    favorites: "Favoritos",
+    history: "Historico",
+    trash: "Lixeira",
+  };
 
   return (
     <div className="app-shell">
@@ -55,8 +210,6 @@ export default function JoviLibrary() {
           notificationsOpen={notificationsOpen}
         />
         <main className="workspace">
-          {storageWarning && <p role="status" className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">{storageWarning}</p>}
-          <button className="primary-button mobile-add" onClick={openAdd}><Plus size={17} />Adicionar memória</button>
           <div className="page-heading">
             <div><span className="eyebrow">Humanly × JOVI</span><h1>{viewTitle[activeView]}</h1><p>Organize os momentos capturados ao longo da sua rotina.</p></div>
             <button className="secondary-button" onClick={exportData}><Download size={17} />Exportar dados</button>
@@ -68,7 +221,7 @@ export default function JoviLibrary() {
                 <StatCard label="Itens salvos" value={activeItems.length} note={`${usagePercent}% da meta mensal`} icon={Folder} tone="coral" />
                 <StatCard label="Colecoes" value={collections.length} note="Organizadas por contexto" icon={BarChart3} tone="blue" />
                 <StatCard label="Favoritos" value={counts.favorites} note={`${favoritePercent}% da biblioteca`} icon={Heart} tone="yellow" />
-                <StatCard label="Esta semana" value={recentCount} note="Registros nos últimos 7 dias" icon={Sparkles} tone="green" />
+                <StatCard label="Esta semana" value={Math.min(activeItems.length, 4)} note="2 a mais que semana passada" icon={Sparkles} tone="green" />
               </section>
 
               {recommendation && (
@@ -113,7 +266,7 @@ export default function JoviLibrary() {
                 <div><h2>{activeView === "dashboard" ? "Adicionados recentemente" : viewTitle[activeView]}</h2><span>{visibleItems.length} itens encontrados</span></div>
                 <div className="filter-row">
                   <select aria-label="Filtrar por categoria" value={category} onChange={(event) => setCategory(event.target.value)}><option>Todas</option>{categories.map((item) => <option key={item}>{item}</option>)}</select>
-                  <select aria-label="Ordenar memorias" value={sort} onChange={(event) => setSort(event.target.value)}><option value="recentes">Mais recentes</option><option value="antigos">Mais antigos</option><option value="az">A - Z</option><option value="manual">Ordem manual</option></select>
+                  <select aria-label="Ordenar memorias" value={sort} onChange={(event) => setSort(event.target.value)}><option value="recentes">Mais recentes</option><option value="antigos">Mais antigos</option><option value="az">A - Z</option></select>
                 </div>
               </div>
               {visibleItems.length ? (
@@ -137,7 +290,7 @@ export default function JoviLibrary() {
       )}
 
       {modal === "form" && (
-        <Modal label="Adicionar ou editar item" onClose={() => setModal(null)}>
+        <dialog open className="modal-backdrop" aria-label="Adicionar ou editar item">
           <button className="modal-dismiss" onClick={() => setModal(null)} aria-label="Fechar janela" />
           <div className="modal" role="document" aria-labelledby="form-title">
             <div className="modal-header"><div><span className="eyebrow">Biblioteca</span><h2 id="form-title">{editingId ? "Editar item" : "Adicionar novo item"}</h2></div><button className="icon-button" onClick={() => setModal(null)} aria-label="Fechar"><X size={19} /></button></div>
@@ -150,21 +303,21 @@ export default function JoviLibrary() {
                 <label><span>Colecao</span><input required value={form.collection} onChange={(event) => setForm({ ...form, collection: event.target.value })} /></label>
                 <label><span>Privacidade</span><select value={form.privacy} onChange={(event) => setForm({ ...form, privacy: event.target.value as Privacy })}><option>Privado</option><option>Publico</option></select></label>
               </div>
-              <label className="full-field"><span>Imagem de capa</span><input type="text" required value={form.image} onChange={(event) => setForm({ ...form, image: event.target.value })} aria-describedby="image-help" /><small id="image-help">Use uma URL http(s) ou uma capa local: /jovi/mode-campus.webp, /jovi/mode-aula.webp, /jovi/mode-treino.webp ou /jovi/mode-casa.webp.</small>{!isImageUrl(form.image) && <small role="alert">Informe uma URL válida ou uma das capas locais.</small>}</label>
+              <label className="full-field"><span>URL da imagem</span><input type="url" required value={form.image} onChange={(event) => setForm({ ...form, image: event.target.value })} /></label>
               <div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setModal(null)}>Cancelar</button><button className="primary-button" type="submit">{editingId ? "Salvar alteracoes" : "Adicionar item"}</button></div>
             </form>
           </div>
-        </Modal>
+        </dialog>
       )}
 
       {modal === "compare" && (
-        <Modal label="Comparacao de itens" onClose={() => setModal(null)}>
+        <dialog open className="modal-backdrop" aria-label="Comparacao de itens">
           <button className="modal-dismiss" onClick={() => setModal(null)} aria-label="Fechar janela" />
           <div className="modal compare-modal" role="document" aria-labelledby="compare-title">
             <div className="modal-header"><div><span className="eyebrow">Analise</span><h2 id="compare-title">Comparacao lado a lado</h2></div><button className="icon-button" onClick={() => setModal(null)} aria-label="Fechar"><X size={19} /></button></div>
             <div className="compare-grid">{selected.map((id) => items.find((item) => item.id === id)).filter(Boolean).map((item) => item && <div key={item.id}><img src={item.image} alt="" /><span className="type-badge">{item.type}</span><h3>{item.title}</h3><p>{item.description}</p><dl><dt>Categoria</dt><dd>{item.category}</dd><dt>Colecao</dt><dd>{item.collection}</dd><dt>Visibilidade</dt><dd>{item.privacy}</dd></dl></div>)}</div>
           </div>
-        </Modal>
+        </dialog>
       )}
     </div>
   );
